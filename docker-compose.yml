@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16.0
+    container_name: quote_editor_postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      - POSTGRES_USER=${USER}
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./tmp/postgresql:/var/lib/postgresql/
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${USER}"]
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.2.2
+    container_name: quote_editor_redis
+    ports:
+      - '127.0.0.1:6379:6379'
+    volumes:
+      - ./tmp/redis:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+    restart: unless-stopped
